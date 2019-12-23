@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="com.wangshuai.dao.CategoryMapper">
+  		
+  		<resultMap type="com.wangshuai.entity.Category" id="CategoryMap">
+  		</resultMap>
+  		<select id="getCategoryById" resultType="com.wangshuai.entity.Category">
+  			select 	id,
+					name,
+					channel_id as channelId
+   			from cms_category
+  			where id=${value}
+  		</select>
+  		
+  		<select id="getCateListByChannelId" resultType="com.wangshuai.entity.Category">
+  			select 	id,
+					name,
+					channel_id as channelId
+   			from cms_category
+  			where channel_id=${value}
+  		</select>
+  </mapper>

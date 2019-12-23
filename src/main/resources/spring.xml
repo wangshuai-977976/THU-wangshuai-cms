@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-4.2.xsd 
+		http://www.springframework.org/schema/mvc 
+		http://www.springframework.org/schema/mvc/spring-mvc-4.2.xsd 
+		http://www.springframework.org/schema/context 
+		http://www.springframework.org/schema/context/spring-context-4.2.xsd
+		http://www.springframework.org/schema/aop 
+		http://www.springframework.org/schema/aop/spring-aop-4.2.xsd 
+		http://www.springframework.org/schema/tx 
+		http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
+		http://www.springframework.org/schema/task 
+		http://www.springframework.org/schema/task/spring-task.xsd">
+
+
+	<!-- 扫描注解 -->
+	<context:component-scan base-package="com.wangshuai">
+		<!-- 排除要要扫描的controller -->
+		<context:exclude-filter type="annotation"
+			expression="org.springframework.stereotype.Controller" />
+	</context:component-scan>
+	
+	
+	<!-- redis的配置文件 -->
+	<import resource="classpath:redis.xml"/>
+	
+	<!-- kafka监听器的配置文件 -->
+	<import resource="classpath:consumer.xml"/>
+	
+	<!-- 加载kafka生产者配置 -->
+	<import resource="classpath:producer.xml"/>
+	
+	<!-- 加载es的配置文件 -->
+	<import resource="classpath:es.xml"/>
+	
+	<!-- 定义线程池 注意,首次用这个标签会报错,因此我们要复制约束进来-->
+	<task:executor id="executor" pool-size="10" queue-capacity="10" rejection-policy="DISCARD_OLDEST" />
+	<!-- 加载数据库配置文件 -->
+	<context:property-placeholder location="classpath:db.properties" />
+	<!-- 数据库连接池 -->
+	<bean id="dataSource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="${jdbc.driver}"></property>
+		<property name="url" value="${jdbc.url}"></property>
+		<property name="username" value="${jdbc.username}"></property>
+		<property name="password" value="${jdbc.password}"></property>
+	</bean>
+
+	<!-- 让spring管理sqlsessionfactory 使用mybatis和spring整合包中的 -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean" scope="singleton">
+		<!-- 注入数据库连接池 -->
+		<property name="dataSource" ref="dataSource"></property>
+		<!-- 指定配置文件地址 -->
+		<property name="mapperLocations" value="classpath:mapper/*.xml"/>
+		<!-- 加载mybatis的核心配置文件 -->
+		<property name="configLocation" value="classpath:mybatis.xml"></property>
+	</bean>
+	
+	<!-- mapper扫描器 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.wangshuai.dao"></property>
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
+	</bean>
+	
+	<!-- 事务管理器 -->
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+	<!-- AOP通知 -->
+	<tx:advice transaction-manager="transactionManager" id="txAdvice">
+		<tx:attributes>
+			<!-- 传播行为   七大传播行为
+				 SUPPORTS：支持当前事务，如果当前没有事务，就以非事务方式执行。 
+				 REQUIRED：支持当前事务，如果当前没有事务，就新建一个事务。这是最常见的选择。 
+			-->
+			<!-- 只读事物 -->
+			<tx:method name="get*" propagation="SUPPORTS" read-only="true"/>
+			<tx:method name="select*" propagation="SUPPORTS" read-only="true"/>
+			<tx:method name="find*" propagation="SUPPORTS" read-only="true"/>
+			<!-- 其他方法使用事物 -->
+			<tx:method name="*" propagation="REQUIRED"/>
+		</tx:attributes>
+	</tx:advice>
+	<!-- AOP切面 -->
+	<aop:config>
+		<aop:pointcut expression="execution(* com.wangshuai.service.*.*(..))" id="pointcut"/>
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="pointcut"/>
+	</aop:config>
+	
+	
+	
+
+
+</beans>
+		
+		

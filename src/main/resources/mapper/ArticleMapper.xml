@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="com.wangshuai.dao.ArticleMapper">
+  
+  		<resultMap type="com.wangshuai.entity.Article" id="ArticleMap">
+  			<id column="id" property="id" />
+  			<result property="articleType" javaType="com.wangshuai.entity.ArticleType" column="articleType" typeHandler="org.apache.ibatis.type.EnumOrdinalTypeHandler" />
+  			<association property="channel" column="channel_id" select="com.wangshuai.dao.ChannelMapper.getChannelById"/>
+  			<association property="category" column="category_id" select="com.wangshuai.dao.CategoryMapper.getCategoryById" />
+  			<association property="user" column="user_id" select="com.wangshuai.dao.UserMapper.getUserById" />
+  		</resultMap>
+  		
+  		<select id="getNewArticleList" resultMap="ArticleMap">
+  			select	id,
+					title,
+					picture
+			from cms_article
+			where status = 1 and deleted = 0
+			order by created desc 
+			<if test="value != 0">
+				limit ${value}
+			</if>
+	 	</select>
+  		<select id="getHotArticleList" resultMap="ArticleMap">
+  			select	id,
+					title,
+					picture,
+					channel_id,
+					category_id,
+					user_id,
+					hits,
+					created,
+					updated,
+					commentCnt
+			from cms_article
+			where status = 1 and deleted = 0 and hot = 1
+			order by created desc
+	 	</select>
+	 	<select id="getArticleById" resultMap="ArticleMap">
+	 		select 
+	 				id,
+					title,
+					content,
+					picture,
+					channel_id,
+					category_id,
+					user_id,
+					hits,
+					hot,
+					status,
+					deleted,
+					created,
+					updated,
+					commentCnt,
+					articleType
+			from cms_article
+			where status = 1 and deleted = 0 
+			And id =${value}
+	 	</select>
+	 	
+	 	<select id="getArticleByCG" resultMap="ArticleMap">
+	 		select	id,
+					title,
+					picture,
+					channel_id,
+					category_id,
+					user_id,
+					hits,
+					created,
+					updated,
+					commentCnt
+			from cms_article
+			where status = 1 and deleted = 0 and hot = 1
+			AND  channel_id=${chId} 
+			<if test="caId != 0">
+				and category_id =${caId}
+			</if>
+	 	</select>
+	 	
+	 	<select id="getMyArticle" resultMap="ArticleMap">
+	 		select 
+	 				id,
+					title,
+					picture,
+					channel_id,
+					category_id,
+					user_id,
+					status,
+					deleted,
+					created,
+					commentCnt,
+					articleType
+			from cms_article
+			where deleted = 0 
+			And user_id =${value}
+	 	</select>
+	 	<select id="articleIsNull" resultMap="ArticleMap">
+	 		select 
+	 				id,
+					title,
+					user_id,
+					status,
+					deleted
+			from cms_article
+			where deleted = 0 
+			And id = ${value}
+	 	</select>
+	 	
+	 	<!-- 管理员获取所有文章 -->
+	 	<select id="getAllArticle" resultMap="ArticleMap">
+	 		SELECT 
+	 				id,
+					title,
+					channel_id,
+					category_id,
+					hot,
+					user_id,
+					status,
+					deleted,
+					created
+			FROM cms_article
+			WHERE deleted = 0
+			<if test="value != 2">
+				And status = ${value}
+			</if>
+			ORDER BY created DESC
+	 	</select>
+	 	
+	 	<select id="getCheckArticleById" resultMap="ArticleMap">
+	 		select 
+	 				id,
+					title,
+					content,
+					picture,
+					channel_id,
+					category_id,
+					user_id,
+					hits,
+					hot,
+					status,
+					deleted,
+					created,
+					updated,
+					commentCnt,
+					articleType
+			from cms_article
+			where deleted = 0 
+			And id =${value}
+	 	</select>
+	 	
+	 	<insert id="addArticle">
+	 		insert into cms_article set
+									title=#{title},
+									content=#{content},
+									picture=#{picture},
+									channel_id=#{channelId},
+									category_id=#{categoryId},
+									user_id=#{userId},
+									hot=0,
+									status=0,
+									deleted=0,
+									created=now(),
+									updated=now()
+	 	</insert>
+	 	<insert id="updateArticle">
+	 		update cms_article set
+									title=#{title},
+									content=#{content},
+									picture=#{picture},
+									channel_id=#{channelId},
+									category_id=#{categoryId},
+									user_id=#{userId},
+									<if test="hot != null and hot !=''">
+										hot=#{hot},
+									</if>
+									status=0,
+									<if test="deleted != null and deleted !=''">
+										deleted=0,
+									</if>
+									updated=now()
+			where id = #{id}
+	 	</insert>
+	 	<insert id="addImages">
+	 		insert into cms_article set
+									title=#{title},
+									content=#{content},
+									channel_id=#{channelId},
+									category_id=#{categoryId},
+									user_id=#{userId},
+									hot=0,
+									status=0,
+									deleted=0,
+									created=now(),
+									updated=now(),
+									articleType=#{articleType.ordinal}
+									
+	 	</insert>
+	 	
+	 	<select id="getmyFavorite" resultMap="ArticleMap">
+	 		select 
+	 				a.id,
+					title,
+					picture,
+					channel_id,
+					category_id,
+					user_id,
+					status,
+					deleted,
+					created,
+					commentCnt,
+					articleType
+			from cms_article a
+			join cms_favorite f on a.id=f.articleId
+			where deleted = 0 
+			And f.userId =${value}
+	 	</select>
+	 	
+  </mapper>

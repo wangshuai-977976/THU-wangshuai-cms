@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangshuai.dao.UserMapper">
+	
+	<resultMap type="com.wangshuai.entity.User" id="UserMap">
+		<id column="id" property="id" />
+		<result column="create_time" property="createTime" />
+		<result column="update_time" property="updateTime" />
+	</resultMap>
+	<select id="getUserList" resultMap="UserMap">
+		SELECT 
+				id,
+				username,
+				password,
+				nickname,
+				birthday,
+				gender,
+				locked,
+				create_time,
+				update_time,
+				url,
+				score,
+				role
+		FROM cms_user		
+		<where>
+			<if test="value != null and value != ''">
+				AND username like '%${value}%'
+			</if>
+		</where>
+	</select>
+	
+	
+	<select id="getUserById" resultMap="UserMap">
+		SELECT 
+				id,
+				username,
+				password,
+				nickname,
+				birthday,
+				gender,
+				locked,
+				create_time,
+				update_time,
+				url,
+				score,
+				role
+		FROM cms_user		
+		where id=${value}
+	</select>
+	
+	<insert id="register">
+	   insert into cms_user set 
+								username=#{username},
+								password=#{password},
+								nickname=#{nickname},
+								birthday=#{birthday},
+								gender=#{gender},
+								locked=0,
+								create_time=now(),
+								update_time=now(),
+								url=#{url},
+								score=#{score},
+								role=#{role}
+	</insert>
+	
+	<select id="goLogin" resultMap="UserMap">
+		SELECT 
+				id,
+				username,
+				password,
+				nickname,
+				birthday,
+				gender,
+				locked,
+				create_time,
+				update_time,
+				url,
+				score,
+				role
+		FROM cms_user		
+		where username =#{username}
+		<if test="password != null and password != ''">
+			 and password=#{password}
+		</if>
+	</select>
+</mapper>

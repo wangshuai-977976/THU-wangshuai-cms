@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="com.wangshuai.dao.ReplyMapper">
+  	<resultMap type="com.wangshuai.entity.Reply" id="ReplyMap">
+  		<id column="id" property="id" />
+  		<result column="comment_id"  property="commentId"/>	
+  		<result column="reply_id" property="replyId" />	
+  		<result column="from_userid" property="fromUserId"/>	
+  		<result column="to_userid" property="toUserId"/>	
+  		<association property="fromUser" column="from_userid" select="com.wangshuai.dao.UserMapper.getUserById"></association>
+  		<association property="toUser" column="to_userid" select="com.wangshuai.dao.UserMapper.getUserById"></association>
+  	</resultMap>
+  	<insert id="pushReply">
+  		insert into cms_reply set 
+  								comment_id=#{commentId},
+  								reply_id=#{replyId},
+  								content=#{content},
+  								from_userid=#{fromUserId},
+  								to_userid=#{toUserId},
+  								created=now()
+  	</insert>
+  	
+  	<select id="getCommentReplys" resultMap="ReplyMap">
+  		select 	id,
+				comment_id,
+				reply_id,
+				content,
+				from_userid,
+				to_userid,
+				created
+		from cms_reply where comment_id=${value}
+  	</select>
+  
+  </mapper>

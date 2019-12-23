@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="com.wangshuai.dao.ChannelMapper">
+  	
+  	<!-- 获取所有斌到 -->
+  	<select id="getChannelList" resultType="com.wangshuai.entity.Channel">
+		select  id ,
+				name ,
+				description ,
+				icon
+		from cms_channel
+  	</select>
+  	
+  	<!-- 根据id查询频道 -->
+  	<select id="getChannelById" resultType="com.wangshuai.entity.Channel">
+		select  id ,
+				name ,
+				description ,
+				icon
+		from cms_channel
+		where id=${value}
+  	</select>
+  	
+  
+  </mapper>
