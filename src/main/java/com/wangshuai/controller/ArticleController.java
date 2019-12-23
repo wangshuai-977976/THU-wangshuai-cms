@@ -649,6 +649,9 @@ public class ArticleController {
 		List<Article> findByTitle = articleResp.findByTitle(key);
 		PageInfo<Article> pageInfo = ESHLUtil.selectPageObjects(Article.class, page,3,new String[] {"title"},"id", key).getPageInfo();
 		model.addAttribute("info", pageInfo);
+		model.addAttribute("key", key);		
+		model.addAttribute("page", page);		
+		model.addAttribute("total",findByTitle.size());		
 		return "index";
 	}
 	

@@ -72,7 +72,7 @@ public class testArticle {
 			article.setCreated(DateUtil.parseDate("2019-01-01"));
 			System.err.println(i+"文章对象是================================="+article);
 		//	kafkaTemplate.sendDefault("qaddMYSQL="+JSON.toJSONString(article));
-			kafkaTemplate.send("articles", "添加add="+JSON.toJSONString(article));
+			kafkaTemplate.send("articles", i+"添加add="+JSON.toJSONString(article));
 		}
 	}
 }

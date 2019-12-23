@@ -34,7 +34,7 @@
 
 					  <form class="navbar-form navbar-left" action="/article/esSearch" method="post">
                             <div class="form-group">
-                              <input type="text"  name="key" class="form-control" placeholder="站内搜索">
+                              <input type="text"  name="key" class="form-control" value="${key }" placeholder="站内搜索">
                             </div>
                             <button type="submit" class="btn btn-default">搜索</button>
                         </form> 

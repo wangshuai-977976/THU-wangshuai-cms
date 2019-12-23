@@ -95,9 +95,8 @@
 							</div>
 						</c:forEach>
 						<div class="row">
+						<%@include file="./common/page.jsp" %>
 						
-						<a href="/article/esSearch?page=1">首页</a>
-						<a href="/article/esSearch?page=${page+1}">下一页</a>
 							<!-- 
 							
 							<ul class="pagination">
@@ -228,4 +227,12 @@
 </nav>
 
 </body>
+<script type="text/javascript">
+function goPage(page,key) {
+	  var key= $("input[name='key']").val();
+	  alert(key);
+	location = "/article/esSearch?page="+page+"&key="+key;
+}
+
+</script>
 </html>
