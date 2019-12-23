@@ -16,6 +16,8 @@
 				<entry key="group.id" value="test-consumer-group" />
 				<!--如果此值设置为true，consumer会周期性的把当前消费的offset值保存到zookeeper。当consumer失败重启之后将会使用此值作为新开始消费的值。 -->
 				<entry key="enable.auto.commit" value="true" />
+				
+				<!-- 从何处开始消费,latest 表示消费最新消息,earliest 表示从头开始消费,none表示抛出异常,默认latest -->
 				<entry key="auto.offset.reset" value="earliest"/>
 				<!--网络请求的socket超时时间。实际超时时间由max.fetch.wait + socket.timeout.ms 确定 -->
 				<entry key="session.timeout.ms" value="15000 " />
